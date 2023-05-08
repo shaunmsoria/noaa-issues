@@ -1,8 +1,9 @@
 defmodule Noaa.NoaaIssues do
+  @noaa_url Application.get_env(:noaa, :noaa_url)
 
   use HTTPoison.Base
 
-  def fetch(_user, _state, location) do
+  def fetch(location) do
     noaa_url(location)
     |> HTTPoison.get
     |> handle_response
@@ -10,7 +11,7 @@ defmodule Noaa.NoaaIssues do
   end
 
   def noaa_url(location) do
-    "https://w1.weather.gov/xml/current_obs/#{location}.rss"
+    "#{@github_url}/#{location}.rss"
   end
 
   def handle_response({:ok, %{status_code: status_code, body: body}}) do
@@ -24,10 +25,15 @@ defmodule Noaa.NoaaIssues do
   defp check_for_errors(_),    do: :error
 
   def convert_to_map({:ok, xml_text}) do
-   result =
-    xml_text
-    |> XmlToMap.naive_map()
+    {
+      :ok,
+      xml_text
+      |> XmlToMap.naive_map()
+    }
+  end
 
+  def convert_to_map({_, body}) do
+    {:error, body}
   end
 
 end
