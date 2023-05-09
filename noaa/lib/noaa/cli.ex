@@ -35,7 +35,8 @@ defmodule Noaa.CLI do
 
   def process({location}) do
     Noaa.NoaaIssues.fetch(location)
-    |> IO.inspect(limit: :infinity)
+    |> decode_response()
+    |> IO.inspect()
   end
 
   def decode_response({:ok, body}), do: body
@@ -50,12 +51,12 @@ defmodule Noaa.CLI do
     :help
   end
 
-  def internal_args({_, [ help: :boolean ], _}) do
-    :help
-  end
-
   def internal_args({_, [location], _}) do
     { location }
+  end
+
+  def internal_args({_, [ help: :boolean ], _}) do
+    :help
   end
 
   def internal_args(_) do

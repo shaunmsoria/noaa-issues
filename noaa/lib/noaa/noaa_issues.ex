@@ -11,7 +11,7 @@ defmodule Noaa.NoaaIssues do
   end
 
   def noaa_url(location) do
-    "#{@github_url}/#{location}.rss"
+    "#{@noaa_url}/#{location}.xml"
   end
 
   def handle_response({:ok, %{status_code: status_code, body: body}}) do
