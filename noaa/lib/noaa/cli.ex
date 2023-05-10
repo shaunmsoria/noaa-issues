@@ -1,5 +1,7 @@
 defmodule Noaa.CLI do
 
+  import Noaa.TableFormatter, only: [ print_table_for_columns: 2 ]
+
   @moduledoc """
   Handle command line parsing and the dispatch to the various functions
   that end up generating a table of all the atmospheric conditions
@@ -36,7 +38,8 @@ defmodule Noaa.CLI do
   def process({location}) do
     Noaa.NoaaIssues.fetch(location)
     |> decode_response()
-    |> IO.inspect()
+    |> print_table_for_columns(["weather", "temperature_string", "dewpoint_string", "relative_humidity", "wind_string", "visibility_mi", "pressure_mb", "pressure_in"])
+    # |> IO.inspect()
   end
 
   def decode_response({:ok, body}), do: body
