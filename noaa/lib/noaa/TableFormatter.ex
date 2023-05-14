@@ -3,20 +3,23 @@ defmodule Noaa.TableFormatter do
 
   def print_table_for_columns(rows, header) do
     with  {:ok, clear_header}   <- clean_header(header),
-          {:ok, table_content}          <- rows["current_observation"]["#content"],
-          {:ok, table_content}  <- content_extractor(header, rows)
+          {:ok, table}          <- access_table(rows),
+          {:ok, table_content}  <- content_extractor(header, table)
      do
-      access_table(rows, Enum.at(header, 0)) |> IO.inspect(label: "#content_test")
 
-      # table = rows["current_observation"]["#content"]
-      table
+      table_content
       |> IO.inspect(label: "table content")
-      # Enum.at(header_element, 0)
+
     end
   end
 
-  def content_extractor(header, rows) do
-    {:ok, "test"}
+  def content_extractor(header, content) do
+    with header_content <- Enum.map(header, content,
+                                      fn header_element, content ->
+                                        {header_element, content[header_element]} end)
+    do
+    {:ok, [header_content, header, content]}
+    end
   end
 
   def clean_header(header) do
