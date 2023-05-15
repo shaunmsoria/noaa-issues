@@ -38,8 +38,7 @@ defmodule Noaa.CLI do
   def process({location}) do
     Noaa.NoaaIssues.fetch(location)
     |> decode_response()
-    |> print_table_for_columns(["weather", "temperature_string", "dewpoint_string", "relative_humidity", "wind_string", "visibility_mi", "pressure_mb", "pressure_in"])
-    # |> IO.inspect()
+    |> print_table_for_columns(["weather", "temperature_string", "dewpoint_string", "relative_humidity", "wind_string", "visibility_mi", "pressure_mb", "pressure_in", "observation_time", "observation_time_rfc822"])
   end
 
   def decode_response({:ok, body}), do: body
