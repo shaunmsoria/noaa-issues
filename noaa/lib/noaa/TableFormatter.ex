@@ -22,25 +22,67 @@ defmodule Noaa.TableFormatter do
   def border_formater(length), do: String.pad_leading("", length, "-")
 
   def side_length(content, length_size) do
-    left_side_padding_size = Float.floor(length_size / 2, 0) - Float.floor(length(content) / 2, 0)
-    right_side_padding_size = Float.round(length_size / 2, 0) - Float.round(length(content) / 2, 0)
-    {:ok, [left_side_padding_size, right_side_padding_size]}
+    left_side_padding_size = trunc(length_size / 2) - trunc(String.length(content) / 2)
+    right_side_padding_size = round(length_size / 2) - round(String.length(content) / 2)
+    {:ok, [abs(left_side_padding_size), abs(right_side_padding_size)]}
   end
 
 
   def side_formater(content, length_size) do
     with {:ok, side_length} = side_length(content, length_size) do
-      String.pad_leading(content, Enum.at(side_length, 0) + 1 , " ") <> content <> String.pad_trailing(content, Enum.at(side_length, 1) + 1, " ") <> "|"
+      String.pad_leading("", Enum.at(side_length, 0) + 1, " ") <> content <> String.pad_trailing("", Enum.at(side_length, 1) + 1 , " ") <> "|"
+    end
+  end
+
+  def header_formater(table_all_string, table_length, border_length) do
+    with  table_header          = Enum.map(table_all_string, fn {key, value} -> key end),
+          header_length_zipped  = Enum.zip(table_header, table_length)
+    do
+    {:ok,
+      [
+        border_formater(border_length),
+        Enum.reduce(header_length_zipped, "|",
+          fn head_length, acc ->
+            {head, length} = head_length
+            acc <> side_formater(head, length)
+          end),
+        border_formater(border_length)
+      ]
+    }
+    end
+  end
+
+  def body_formater(table_all_string, table_length, border_length) do
+    with  table_body          = Enum.map(table_all_string, fn {key, value} -> value end),
+          body_length_zipped  = Enum.zip(table_body, table_length)
+    do
+    {:ok,
+      [
+        Enum.reduce(body_length_zipped, "|",
+          fn body_length, acc ->
+            {body, length} = body_length
+            acc <> side_formater(body, length)
+          end),
+        border_formater(border_length)
+      ]
+    }
     end
   end
 
   def table_formater(table_all_string, table_length) do
-    with border_length = Enum.sum(table_length) + 2 * length(table_length),
-        border_string = border_formater(border_length) do
-          border_string
-          |> IO.inspect(label: "The value of border_string is: ")
+    with  border_length       = Enum.sum(table_length) + (2 * length(table_length)),
+          border_string       = border_formater(border_length),
+          {:ok, table_header} = header_formater(table_all_string, table_length, border_length),
+          {:ok, table_body}   = body_formater(table_all_string, table_length, border_length)
+    do
 
-          # format each word in the table
+          Enum.map(table_header ++ table_body, fn element -> IO.puts(element) end)
+          # table_body
+          # |> IO.inspect(label: "The value of table_body is: ")
+
+          # fix the formatting of last_updated
+
+
 
     end
   end
