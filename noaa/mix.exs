@@ -4,7 +4,9 @@ defmodule Noaa.MixProject do
   def project do
     [
       app: :noaa,
+      escript: escript_config(),
       version: "0.1.0",
+      name: "Noaa",
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       deps: deps()
@@ -23,9 +25,15 @@ defmodule Noaa.MixProject do
     [
       {:httpoison, "~> 2.1"},
       {:elixir_xml_to_map, "~> 2.0"},
-      {:json, "~> 1.4"}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:json, "~> 1.4"},
+      {:ex_doc, "~> 0.19"},
+      {:earmark, "~> 1.4.38"}
+    ]
+  end
+
+  defp escript_config do
+    [
+      main_module: Noaa.CLI
     ]
   end
 end

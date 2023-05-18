@@ -1,9 +1,14 @@
 defmodule Noaa.NoaaIssues do
+
+  require Logger
+
   @noaa_url Application.get_env(:noaa, :noaa_url)
 
   use HTTPoison.Base
 
   def fetch(location) do
+    Logger.info("Fetching #{location}")
+
     noaa_url(location)
     |> HTTPoison.get
     |> handle_response
@@ -15,6 +20,10 @@ defmodule Noaa.NoaaIssues do
   end
 
   def handle_response({:ok, %{status_code: status_code, body: body}}) do
+    Logger.info("Got response #{status_code}")
+    Logger.debug(fn -> inspect(body) end)
+
+
     {
       status_code |> check_for_errors(),
       body

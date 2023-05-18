@@ -70,38 +70,21 @@ defmodule Noaa.TableFormatter do
   end
 
   def table_formater(table_all_string, table_length) do
-    with  border_length       = Enum.sum(table_length) + (2 * length(table_length)),
+    with  border_length       = Enum.sum(table_length) + (3 * length(table_length)) + 1,
           border_string       = border_formater(border_length),
           {:ok, table_header} = header_formater(table_all_string, table_length, border_length),
           {:ok, table_body}   = body_formater(table_all_string, table_length, border_length)
     do
 
           Enum.map(table_header ++ table_body, fn element -> IO.puts(element) end)
-          # table_body
-          # |> IO.inspect(label: "The value of table_body is: ")
-
-          # fix the formatting of last_updated
-
-
-
     end
   end
 
   def table_length_calculator(table_all_string) do
     {:ok, Enum.map(table_all_string,
       fn {key, value} ->
-        value0 =
-          String.split(value, "\n")
-          |> Enum.at(0)
-          |> String.length()
 
-        value1 =
-          String.split(value, "\n")
-          |> Enum.at(1)
-          |> value_nil
-          |> String.length()
-
-          Enum.max([String.length(key), value0 , value1])
+        Enum.max([String.length(key), String.length(value)])
       end)}
   end
 
@@ -119,7 +102,7 @@ defmodule Noaa.TableFormatter do
         end
 
       data_refined =
-        data_extracted ++ [{:last_updated, "#{content[Enum.at(header, length(header) - 2)]}\n#{content[Enum.at(header, length(header) - 1)]}"}]
+        data_extracted ++ [{:last_updated, "#{content[Enum.at(header, length(header) - 2)]} #{content[Enum.at(header, length(header) - 1)]}"}]
 
       {:ok, data_refined}
   end

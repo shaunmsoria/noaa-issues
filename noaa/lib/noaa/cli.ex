@@ -1,30 +1,32 @@
 defmodule Noaa.CLI do
 
+
   import Noaa.TableFormatter, only: [ print_table_for_columns: 2 ]
 
   @moduledoc """
-  Handle command line parsing and the dispatch to the various functions
-  that end up generating a table of all the atmospheric conditions
-  for the specified state and location
+    Handle command line parsing and the dispatch to the various functions
+    that end up generating a table of all the atmospheric conditions
+    for the specified state and location
   """
 
-  def run(argv) do
-    parse_args(argv)
+  def main(argv) do
+    argv
+    |> parse_args()
+    |> process()
   end
 
   @doc """
-  `argv` can be -h or --help, which returns :help.
+    `argv` can be -h or --help, which returns :help.
 
-  Otherwise it is a NOAA location.
+    Otherwise it is a NOAA location.
 
-  Return a tupe of `{location}`, or `:help` if help was given.
+    Return a tupe of `{location}`, or `:help` if help was given.
   """
 
   def parse_args(argv) do
     OptionParser.parse(argv, switches:  [ help: :boolean],
                              aliases:   [ h:    :help   ])
     |> internal_args()
-    |> process()
   end
 
   def process(:help) do
